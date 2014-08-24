@@ -16,6 +16,7 @@ from django.core.management import call_command
 from .utils import TestServer
 
 from whitenoise.django import DjangoWhiteNoise
+from whitenoise.base import StaticFile
 
 # For Django 1.7+ ensure app registry is ready
 if hasattr(django, 'setup'):
@@ -87,14 +88,14 @@ class DjangoWhiteNoiseTest(SimpleTestCase):
         response = self.server.get(url)
         self.assertEqual(response.content, TEST_FILES['static' + ASSET_FILE])
         self.assertEqual(response.headers.get('Cache-Control'),
-                'public, max-age={}'.format(DjangoWhiteNoise.FOREVER))
+                'public, max-age={}'.format(StaticFile.FOREVER))
 
     def test_unversioned_file_not_cached_forever(self):
         url = settings.STATIC_URL + ASSET_FILE.lstrip('/')
         response = self.server.get(url)
         self.assertEqual(response.content, TEST_FILES['static' + ASSET_FILE])
         self.assertEqual(response.headers.get('Cache-Control'),
-                'public, max-age={}'.format(DjangoWhiteNoise.max_age))
+                'public, max-age={}'.format(DjangoWhiteNoise.CONFIG['max_age']))
 
     def test_get_gzip(self):
         url = storage.staticfiles_storage.url(ASSET_FILE.lstrip('/'))

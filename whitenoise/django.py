@@ -25,12 +25,10 @@ class DjangoWhiteNoise(WhiteNoise):
     def __init__(self, application):
         self.charset = settings.FILE_CHARSET
         # Allow settings to override default attributes
-        for attr in self.config_attrs:
-            settings_key = 'WHITENOISE_{}'.format(attr.upper())
-            try:
-                setattr(self, attr, getattr(settings, settings_key))
-            except AttributeError:
-                pass
+        self.config = {
+            key: getattr(settings, 'WHITENOISE_%s' % key.upper(), default)
+            for key, default in self.CONFIG.items()
+        }
         static_root, static_prefix = self.get_static_root_and_prefix()
         self.static_prefix = static_prefix
         root = getattr(settings, 'WHITENOISE_ROOT', None)
