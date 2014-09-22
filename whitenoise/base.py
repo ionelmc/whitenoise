@@ -36,11 +36,11 @@ class StaticFile(object):
 
     GZIP_SUFFIX = '.gz'
 
-    def __init__(self, path, is_immutable, **config):
+    def __init__(self, path, is_immutable, guess_type=mimetypes.guess_type, **config):
         self.path = path
         stat = os.stat(path)
         self.mtime_tuple = gmtime(stat.st_mtime)
-        mimetype, encoding = mimetypes.guess_type(path)
+        mimetype, encoding = guess_type(path)
         mimetype = mimetype or 'application/octet-stream'
         charset = self.get_charset(mimetype)
         params = {'charset': charset} if charset else {}
@@ -134,6 +134,7 @@ class WhiteNoise(object):
         allow_all_origins=True,
         charset='utf-8',
         index_file='index.html',
+        guess_type=mimetypes.guess_type,
     )
 
     def __init__(self, application, root=None, prefix=None, **kwargs):
